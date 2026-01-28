@@ -34,3 +34,46 @@ out.to_csv("gspc_market_return.csv", index=True)
 
 print(out.head())
 print("rows:", len(out))
+
+## sharesOutstanding
+
+import yfinance as yf
+import pandas as pd
+
+
+URL_SYMBOLS = "https://raw.githubusercontent.com/RatanakamonS/Stock_Price/main/symbol_S%26P500_3yrs.csv"
+
+symbols_df = pd.read_csv(URL_SYMBOLS)
+
+### ใช้คอลัมน์แรกเสมอ
+symbols = symbols_df.iloc[:, 0].astype(str).unique().tolist()
+
+print("Total symbols loaded:", len(symbols))
+print("First 5 symbols:", symbols[:5])
+
+rows = []
+
+for sym in symbols:
+    try:
+        tk = yf.Ticker(sym)
+        shares = tk.info.get("sharesOutstanding", None)
+
+        rows.append({
+            "symbol": sym,
+            "sharesOutstanding_proxy": shares
+        })
+
+    except Exception:
+        rows.append({
+            "symbol": sym,
+            "sharesOutstanding_proxy": None
+        })
+
+shares_df = pd.DataFrame(rows)
+
+print(shares_df.head())
+print("Total symbols:", len(shares_df))
+print("Missing shares:", shares_df["sharesOutstanding_proxy"].isna().sum())
+
+shares_df.to_csv("sp500_shares_outstanding_proxy.csv", index=False)
+
