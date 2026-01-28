@@ -1,3 +1,5 @@
+#ดาวน์โหลด ^GSPC แล้ว export CSV
+
 import yfinance as yf
 import pandas as pd
 
